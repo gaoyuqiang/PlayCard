@@ -105,20 +105,72 @@
     return [result copy];
 }
 
-//单牌
-- (NSArray *)single:(NSString *)p {
+//三带一   w222AKKKJ9993
+- (NSArray *)threeAndOne:(NSString *)p {
+    NSMutableArray *result = [NSMutableArray array];
     
+    //三张牌数组
+    NSMutableArray *threeArray = [[self find:p number:3] mutableCopy];
+    //单牌数组
+    NSArray *singleArray = [self find:p number:1];
+    
+    for (NSString *str in threeArray) {
+        for (NSString *singleStr in singleArray) {
+            if(![[str substringToIndex:1] isEqualToString:singleStr]) {//除了三个以外的任意单牌
+                NSString *temp = [str stringByAppendingString:singleStr];
+                [result addObject:temp];
+            }
+        }
+    }
+    
+    return [result copy];
 }
 
-//单牌
-- (NSArray *)single:(NSString *)p {
+//三带2   w222AA KKKJJ 99933
+- (NSArray *)threeAndTwo:(NSString *)p {
+    NSMutableArray *result = [NSMutableArray array];
     
+    //三张牌数组
+    NSMutableArray *threeArray = [[self find:p number:3] mutableCopy];
+    //对牌数组
+    NSArray *twoArray = [self find:p number:2];
+    
+    for (NSString *str in threeArray) {
+        for (NSString *twoStr in twoArray) {
+            if(![[str substringToIndex:1] isEqualToString:[twoStr substringToIndex:1]]) {//除了三个以外的任意对牌
+                NSString *temp = [str stringByAppendingString:twoStr];
+                [result addObject:temp];
+            }
+        }
+    }
+    
+    return [result copy];
+
 }
 
-//单牌
-- (NSArray *)single:(NSString *)p {
+//四带二   w2222AKKKKJJ9994433
+- (NSArray *)fourAndTwo:(NSString *)p {
+    NSMutableArray *result = [NSMutableArray array];
     
+    //四张牌数组
+    NSMutableArray *fourArray = [[self find:p number:4] mutableCopy];
+    //单牌数组
+    NSArray *twoArray = [self find:p number:2];
+    
+    for (NSString *str in fourArray) {
+        NSString *tempP = [str stringByReplacingOccurrencesOfString:str withString:@""];
+        for (int i = 0; i < tempP.length; i++) {
+            NSString *tempC = [tempP substringWithRange:NSMakeRange(i, 1)];
+            for (int ; <#condition#>; <#increment#>) {
+                <#statements#>
+            }
+        }
+                [result addObject:temp];
+    }
+    
+    return [result copy];
 }
+
 
 //单牌
 - (NSArray *)single:(NSString *)p {
