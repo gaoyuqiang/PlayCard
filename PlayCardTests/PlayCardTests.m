@@ -48,7 +48,7 @@
 }
 
 - (void)testSuccee{
-    NSArray *result = [_card succee:_p length:6];
+    NSArray *result = [_card succee:_p length:5];
     NSLog(@"%@",result);
     BOOL isEqual = YES;
     XCTAssertTrue(isEqual);
@@ -77,6 +77,13 @@
 
 - (void)testFourAndDouble{
     NSArray *result = [_card fourAndDouble:_p];
+    NSLog(@"%@",result);
+    BOOL isEqual = YES;
+    XCTAssertTrue(isEqual);
+}
+
+- (void)testSucceeDouble {
+    NSArray *result = [_card succeeDouble:@"Ww22AAKKQQJJ009988776554433" length:5];
     NSLog(@"%@",result);
     BOOL isEqual = YES;
     XCTAssertTrue(isEqual);

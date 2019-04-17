@@ -101,14 +101,11 @@
             continue;
         }
         
-        NSInteger a = [_allNumArray indexOfObject:lastC];
-        NSInteger b = [_allNumArray indexOfObject:c];
-
         if([_allNumArray indexOfObject:lastC] == [_allNumArray indexOfObject:c] - 1) {
             lastFindCount++;
             [lastFindStr appendString:c];
 
-            if(lastFindCount >= length) {
+            if(lastFindCount >= length - 1) {
                 [result addObject:[lastFindStr substringFromIndex:lastFindStr.length - length]];//44444
             }
         } else {
@@ -210,10 +207,47 @@
     }
     return [result copy];
 }
+
+//连对
+- (NSArray *)succeeDouble:(NSString *)p length:(int)length {//最少3对
+    NSMutableArray *result = [NSMutableArray array];
+    
+    //对牌数组
+    NSMutableArray *twoArray = [[self find:p number:2] mutableCopy];
+    NSMutableString *singleStr = [NSMutableString string];
+    for (NSString *twoStr in twoArray) {
+        [singleStr appendString:[twoStr charStrOfIndex:0]];
+    }
+    NSArray *resultTemp = [self succee:singleStr length:length];
+    for (NSString *tempStr in resultTemp) {
+        NSMutableString *str = [NSMutableString string];
+        for (int i = 0; i < tempStr.length; i++) {
+            NSString *ss = [tempStr charStrOfIndex:i];
+            [str appendFormat:@"%@%@", ss, ss];
+        }
+        [result addObject:str];
+    }
+
+    return [result copy];
+}
+
+////TODO:    拖拉机
+//- (NSArray *):(NSString *)p length:(int)length {//最少3对
+//    NSMutableArray *result = [NSMutableArray array];
+//
+//    return [result copy];
+//}
 ////单牌
 //- (NSArray *)single:(NSString *)p {
 //
 //}
+
+- (NSArray *)wangzha:(NSString *)p {
+    if([p containsString:@"Ww"]) {
+        return @[@"Ww"];
+    }
+    return @[];
+}
 
 //炸弹
 - (NSArray *)bomb:(NSString *)p {

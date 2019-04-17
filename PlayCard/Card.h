@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray *)fourAndDouble:(NSString *)p;
 
+- (NSArray *)succeeDouble:(NSString *)p length:(int)length;
+
 - (NSArray *)bomb:(NSString *)p;
 
 @end
