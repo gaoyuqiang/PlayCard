@@ -165,7 +165,7 @@
 
 }
 
-//四带二   w2222AKKKKJJ9994433
+//四带二   w2222AKKKKJJ9994433 （可以是对）
 - (NSArray *)fourAndTwo:(NSString *)p {
     NSMutableArray *result = [NSMutableArray array];
     
@@ -188,6 +188,28 @@
     return [result copy];
 }
 
+//四带两对   w2222AKKKKJJ9994433 （可以是对）
+- (NSArray *)fourAndDouble:(NSString *)p {
+    NSMutableArray *result = [NSMutableArray array];
+    
+    //四张牌数组
+    NSMutableArray *fourArray = [[self find:p number:4] mutableCopy];
+
+    for (NSString *str in fourArray) {
+        NSString *tempP = [p stringByReplacingOccurrencesOfString:str withString:@""];
+        NSMutableArray *twoArray = [[self find:tempP number:2] mutableCopy];
+
+        for (int j = 0; j < twoArray.count - 1; j++) {
+            for (int k = j+1; k < twoArray.count ; k++) {
+                NSString *resultStr = [NSString stringWithFormat:@"%@%@%@", str, twoArray[j], twoArray[k]];
+                if(![result containsObject:resultStr]) {
+                    [result addObject:resultStr];
+                }
+            }
+        }
+    }
+    return [result copy];
+}
 ////单牌
 //- (NSArray *)single:(NSString *)p {
 //

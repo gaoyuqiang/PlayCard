@@ -69,7 +69,17 @@
 }
 
 - (void)testFourAndTwo{
-    
+    NSArray *result = [_card fourAndTwo:_p];
+    NSLog(@"%@",result);
+    BOOL isEqual = YES;
+    XCTAssertTrue(isEqual);
+}
+
+- (void)testFourAndDouble{
+    NSArray *result = [_card fourAndDouble:_p];
+    NSLog(@"%@",result);
+    BOOL isEqual = YES;
+    XCTAssertTrue(isEqual);
 }
 
 - (void)testBomb{
