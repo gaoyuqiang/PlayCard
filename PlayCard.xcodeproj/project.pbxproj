@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3EAEC14222670C53009ACC90 /* PlayCardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EAEC14122670C53009ACC90 /* PlayCardTests.m */; };
+		3EAEC14B22670C7C009ACC90 /* Card.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ECC95E72266224200722583 /* Card.m */; };
 		3ECC95D22266220800722583 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ECC95D12266220800722583 /* AppDelegate.m */; };
 		3ECC95D52266220800722583 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ECC95D42266220800722583 /* ViewController.m */; };
 		3ECC95D82266220900722583 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3ECC95D62266220900722583 /* Main.storyboard */; };
@@ -16,7 +18,21 @@
 		3ECC95E82266224200722583 /* Card.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ECC95E72266224200722583 /* Card.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		3EAEC14422670C53009ACC90 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3ECC95C52266220800722583 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3ECC95CC2266220800722583;
+			remoteInfo = PlayCard;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		3EAEC13A22670BA4009ACC90 /* PlayCard copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "PlayCard copy-Info.plist"; path = "/Users/a58/project/PlayCard/PlayCard copy-Info.plist"; sourceTree = "<absolute>"; };
+		3EAEC13F22670C53009ACC90 /* PlayCardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlayCardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3EAEC14122670C53009ACC90 /* PlayCardTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayCardTests.m; sourceTree = "<group>"; };
+		3EAEC14322670C53009ACC90 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3ECC95CD2266220800722583 /* PlayCard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlayCard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3ECC95D02266220800722583 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3ECC95D12266220800722583 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -32,6 +48,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3EAEC13C22670C53009ACC90 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3ECC95CA2266220800722583 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -42,11 +65,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3EAEC14022670C53009ACC90 /* PlayCardTests */ = {
+			isa = PBXGroup;
+			children = (
+				3EAEC14122670C53009ACC90 /* PlayCardTests.m */,
+				3EAEC14322670C53009ACC90 /* Info.plist */,
+			);
+			path = PlayCardTests;
+			sourceTree = "<group>";
+		};
 		3ECC95C42266220800722583 = {
 			isa = PBXGroup;
 			children = (
 				3ECC95CF2266220800722583 /* PlayCard */,
+				3EAEC14022670C53009ACC90 /* PlayCardTests */,
 				3ECC95CE2266220800722583 /* Products */,
+				3EAEC13A22670BA4009ACC90 /* PlayCard copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -54,6 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				3ECC95CD2266220800722583 /* PlayCard.app */,
+				3EAEC13F22670C53009ACC90 /* PlayCardTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -79,6 +114,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3EAEC13E22670C53009ACC90 /* PlayCardTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3EAEC14822670C54009ACC90 /* Build configuration list for PBXNativeTarget "PlayCardTests" */;
+			buildPhases = (
+				3EAEC13B22670C53009ACC90 /* Sources */,
+				3EAEC13C22670C53009ACC90 /* Frameworks */,
+				3EAEC13D22670C53009ACC90 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3EAEC14522670C53009ACC90 /* PBXTargetDependency */,
+			);
+			name = PlayCardTests;
+			productName = PlayCardTests;
+			productReference = 3EAEC13F22670C53009ACC90 /* PlayCardTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		3ECC95CC2266220800722583 /* PlayCard */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3ECC95E32266220B00722583 /* Build configuration list for PBXNativeTarget "PlayCard" */;
@@ -105,6 +158,10 @@
 				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = 58;
 				TargetAttributes = {
+					3EAEC13E22670C53009ACC90 = {
+						CreatedOnToolsVersion = 10.0;
+						TestTargetID = 3ECC95CC2266220800722583;
+					};
 					3ECC95CC2266220800722583 = {
 						CreatedOnToolsVersion = 10.0;
 					};
@@ -124,11 +181,19 @@
 			projectRoot = "";
 			targets = (
 				3ECC95CC2266220800722583 /* PlayCard */,
+				3EAEC13E22670C53009ACC90 /* PlayCardTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3EAEC13D22670C53009ACC90 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3ECC95CB2266220800722583 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -142,6 +207,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3EAEC13B22670C53009ACC90 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3EAEC14222670C53009ACC90 /* PlayCardTests.m in Sources */,
+				3EAEC14B22670C7C009ACC90 /* Card.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3ECC95C92266220800722583 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -154,6 +228,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3EAEC14522670C53009ACC90 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3ECC95CC2266220800722583 /* PlayCard */;
+			targetProxy = 3EAEC14422670C53009ACC90 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		3ECC95D62266220900722583 /* Main.storyboard */ = {
@@ -175,6 +257,44 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		3EAEC14622670C54009ACC90 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2MW92U9MCC;
+				INFOPLIST_FILE = PlayCardTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = aa.PlayCardTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PlayCard.app/PlayCard";
+			};
+			name = Debug;
+		};
+		3EAEC14722670C54009ACC90 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2MW92U9MCC;
+				INFOPLIST_FILE = PlayCardTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = aa.PlayCardTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PlayCard.app/PlayCard";
+			};
+			name = Release;
+		};
 		3ECC95E12266220B00722583 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -324,6 +444,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3EAEC14822670C54009ACC90 /* Build configuration list for PBXNativeTarget "PlayCardTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3EAEC14622670C54009ACC90 /* Debug */,
+				3EAEC14722670C54009ACC90 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3ECC95C82266220800722583 /* Build configuration list for PBXProject "PlayCard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

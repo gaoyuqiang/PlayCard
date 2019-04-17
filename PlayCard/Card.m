@@ -22,17 +22,28 @@
 
 @implementation Card
 
-- (void)playWithP1:(NSString *)p1 p2:(NSString *)p2 {
-    _p1 = p1;
-    _p2 = p2;
-    
-    _allNumArray = @[@"W", @"w", @"2", @"A", @"K", @"Q", @"J", @"0", @"9", @"8", @"7", @"6", @"5", @"4", @"3"];
-    _bigArray =  @[@"W", @"w", @"2"];
+- (instancetype)initWithP1:(NSString *)p1 p2:(NSString *)p2 {
+    if(self = [super init]) {
+        _p1 = p1;
+        _p2 = p2;
+        
+        _allNumArray = @[@"W", @"w", @"2", @"A", @"K", @"Q", @"J", @"0", @"9", @"8", @"7", @"6", @"5", @"4", @"3"];
+        _bigArray =  @[@"W", @"w", @"2"];
+    }
+    return self;
 }
 
 //单牌
 - (NSArray *)single:(NSString *)p {
-    return [self find:p number:1];
+//    return [self find:p number:1];
+    NSMutableArray *result = [NSMutableArray array];
+    for (int i = 0; i < p.length; i++) {
+        NSString *ch = [p charStrOfIndex:i];
+        if(![result containsObject:ch]) {
+            [result addObject:ch];
+        }
+    }
+    return [result copy];
 }
 
 
@@ -42,7 +53,7 @@
 }
 
 //仨牌
-- (NSArray *)three:(NSString *)p number:(int)num {
+- (NSArray *)three:(NSString *)p {
     return [self find:p number:3];
 }
 
@@ -75,28 +86,34 @@
 }
 
 //顺子
-- (NSArray *)succee:(NSString *)p {
+- (NSArray *)succee:(NSString *)p length:(int)length {
     NSMutableArray *result = [NSMutableArray array];
     
     NSString *lastC = nil;      //上张牌
     int lastFindCount = 0;      //找到跟上张相同的次数
-    NSMutableArray *lastFindResult = [NSMutableArray array];
+    NSMutableString *lastFindStr = [NSMutableString string];
     for (int i = 0; i < p.length; i++) {
         NSString *c = [p substringWithRange:NSMakeRange(i, 1)];
         if([_bigArray containsObject:c]) {
             continue;
         }
+        if([c isEqualToString:lastC]) {
+            continue;
+        }
         
-        if([_allNumArray indexOfObject:lastC] - [_allNumArray indexOfObject:c] == 1) {
+        NSInteger a = [_allNumArray indexOfObject:lastC];
+        NSInteger b = [_allNumArray indexOfObject:c];
+
+        if([_allNumArray indexOfObject:lastC] == [_allNumArray indexOfObject:c] - 1) {
             lastFindCount++;
-            [lastFindResult addObject:c];
-            
-            if(lastFindCount >= 4) {
-                [result addObject:[lastFindResult copy]];//44444
+            [lastFindStr appendString:c];
+
+            if(lastFindCount >= length) {
+                [result addObject:[lastFindStr substringFromIndex:lastFindStr.length - length]];//44444
             }
         } else {
             lastFindCount = 0;
-            [lastFindResult removeAllObjects];
+            lastFindStr = [NSMutableString stringWithString:c];
         }
         
         lastC = c;
@@ -112,7 +129,7 @@
     //三张牌数组
     NSMutableArray *threeArray = [[self find:p number:3] mutableCopy];
     //单牌数组
-    NSArray *singleArray = [self find:p number:1];
+    NSArray *singleArray = [self single:p];
     
     for (NSString *str in threeArray) {
         for (NSString *singleStr in singleArray) {
@@ -154,32 +171,39 @@
     
     //四张牌数组
     NSMutableArray *fourArray = [[self find:p number:4] mutableCopy];
-    //单牌数组
-    NSArray *twoArray = [self find:p number:2];
-    
+
     for (NSString *str in fourArray) {
-        NSString *tempP = [str stringByReplacingOccurrencesOfString:str withString:@""];
-        for (int i = 0; i < tempP.length; i++) {
-            NSString *tempC = [tempP substringWithRange:NSMakeRange(i, 1)];
-            for (int ; <#condition#>; <#increment#>) {
-                <#statements#>
+        NSString *tempP = [p stringByReplacingOccurrencesOfString:str withString:@""];
+        
+        for (int j = 0; j < tempP.length - 1; j++) {
+            for (int k = j+1; k < tempP.length ; k++) {
+                NSString *resultStr = [NSString stringWithFormat:@"%@%@%@", str, [tempP charStrOfIndex:j], [tempP charStrOfIndex:k]];
+                if(![result containsObject:resultStr]) {
+                    [result addObject:resultStr];
+                }
             }
         }
-                [result addObject:temp];
     }
     
     return [result copy];
 }
 
-
-//单牌
-- (NSArray *)single:(NSString *)p {
-    
-}
+////单牌
+//- (NSArray *)single:(NSString *)p {
+//
+//}
 
 //炸弹
 - (NSArray *)bomb:(NSString *)p {
     return [self find:p number:4];
+}
+
+@end
+
+@implementation NSString (subChar)
+
+- (NSString *)charStrOfIndex:(int)index {
+    return [self substringWithRange:NSMakeRange(index, 1)];
 }
 
 @end

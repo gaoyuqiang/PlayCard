@@ -12,7 +12,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Card : NSObject
 
-- (void)playWithP1:(NSString *)p1 p2:(NSString *)p2;
+- (instancetype)initWithP1:(NSString *)p1 p2:(NSString *)p2;
+
+- (NSArray *)single:(NSString *)p;
+
+- (NSArray *)two:(NSString *)p;
+
+- (NSArray *)three:(NSString *)p;
+
+- (NSArray *)find:(NSString *)p number:(int)num;
+
+//- (NSArray *)succee:(NSString *)p;
+- (NSArray *)succee:(NSString *)p length:(int)length;
+
+- (NSArray *)threeAndOne:(NSString *)p;
+
+- (NSArray *)threeAndTwo:(NSString *)p;
+
+- (NSArray *)fourAndTwo:(NSString *)p;
+
+- (NSArray *)bomb:(NSString *)p;
+
+@end
+
+@interface  NSString (subChar)
+
+- (NSString *)charStrOfIndex:(int)index;
 
 @end
 
