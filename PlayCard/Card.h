@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithP1:(NSString *)p1 p2:(NSString *)p2;
 
+- (void)play;
+
 - (NSArray *)single:(NSString *)p;
 
 - (NSArray *)two:(NSString *)p;
@@ -34,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray *)fourAndDouble:(NSString *)p;
 
 - (NSArray *)succeeDouble:(NSString *)p length:(int)length;
+
+- (NSArray *)wangzha:(NSString *)p;
 
 - (NSArray *)bomb:(NSString *)p;
 

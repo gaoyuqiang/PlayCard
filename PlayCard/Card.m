@@ -15,6 +15,7 @@
 
 @property (nonatomic, strong) NSString *p1;
 @property (nonatomic, strong) NSString *p2;
+@property (nonatomic, assign) BOOL p1Turn;
 
 @property (nonatomic, strong) NSArray *allNumArray;
 @property (nonatomic, strong) NSArray *bigArray;
@@ -33,6 +34,15 @@
     return self;
 }
 
+- (void)play {
+//    _p1Turn = YES;
+    NSString *lastCard = nil;
+    while (_p1.length > 0 && _p2.length > 0) {
+        if(lastCard == nil) {
+            
+        }
+    }
+}
 //单牌
 - (NSArray *)single:(NSString *)p {
 //    return [self find:p number:1];

@@ -89,6 +89,13 @@
     XCTAssertTrue(isEqual);
 }
 
+- (void)testWangZha {
+    NSArray *result = [_card wangzha:@"Ww22AAKKQQJJ009988776554433"];
+    NSLog(@"%@",result);
+    BOOL isEqual = YES;
+    XCTAssertTrue(isEqual);
+}
+
 - (void)testBomb{
     NSArray *result = [_card bomb:_p];
     NSLog(@"%@",result);
