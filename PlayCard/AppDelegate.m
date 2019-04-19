@@ -7,9 +7,13 @@
 //
 
 #import "AppDelegate.h"
+#import "Card.h"
+
 
 @interface AppDelegate ()
 
+@property (nonatomic, strong) Card *card;
+@property (nonatomic, strong) NSString * p;
 @end
 
 @implementation AppDelegate
@@ -17,6 +21,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    NSString *p1 = @"J3";
+    NSString *p2 = @"W85";
+    _card = [[Card alloc] initWithP1:p1 p2:p2];
+    [_card play:10];
+
     return YES;
 }
 

@@ -26,6 +26,10 @@
     _p = @"Ww222AAAAKKQJJJ099877655543";
 }
 
+- (void)testPlay {
+    [_card play];
+}
+
 - (void)testAllKind {
     NSArray *result = [_card allKind:@"09988876543"];
     NSLog(@"%@",result);

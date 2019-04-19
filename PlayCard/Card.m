@@ -24,6 +24,7 @@
 @implementation Card {
     NSString * _lastCard;
     int _depth;
+    NSString *_bestCard;
 }
 
 - (instancetype)initWithP1:(NSString *)p1 p2:(NSString *)p2 {
@@ -80,7 +81,6 @@
             
         } else if ([self wangzha:lastCard]){
             //王炸=====>
-            [result addObject:@""];
         }
     } else if (lastCard.length == 3) {
         //三牌=====>
@@ -134,6 +134,10 @@
         }
     }
     
+    if(result.count == 0) {
+        [result addObject:@""];
+    }
+
     return [result copy];
     
 }
@@ -152,7 +156,7 @@
 - (BOOL)compareValueOfSameType:(NSString *)value1  value2:(NSString *)value2 {
     NSString *str1 = [value1 charStrOfIndex:0];
     NSString *str2 = [value2 charStrOfIndex:0];
-    return [_allNumArray indexOfObject:str1] > [_allNumArray indexOfObject:str2];
+    return [_allNumArray indexOfObject:str1] < [_allNumArray indexOfObject:str2];
 }
 
 - (void)play:(int)depth {
@@ -161,10 +165,9 @@
 }
 
 - (int) MaxMin:(int) depth mode:(int)mode {
-    NSAssert(depth > 20, @"深度大点，没事");
     int best = -100000000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
     if (depth <= 0) {//当前以局面为博弈树的root
-        return 10000;
+        return 0;
     }
     //    　GenerateLegalMoves(); //生成当前所有着法
     NSArray *allResult = [self allKind:mode == 0 ? _p1 : _p2 lastCard:_lastCard];
@@ -175,7 +178,18 @@
         NSString *saveP2 = _p2;
         NSString *saveLast = _lastCard;
         
-        [(mode == 0 ? _p1 : _p2) stringByReplacingOccurrencesOfString:card withString:@""];
+        if(mode == 0) {
+            NSRange range = [_p1 rangeOfString:card];
+            if(range.location != NSNotFound) {
+                _p1 = [_p1 stringByReplacingCharactersInRange:range withString:@""];
+            }
+        } else {
+            NSRange range = [_p2 rangeOfString:card];
+            if(range.location != NSNotFound) {
+                _p2 = [_p2 stringByReplacingCharactersInRange:range withString:@""];
+            }
+        }
+        
         _lastCard = card;
         
         /** 估值 */
@@ -193,11 +207,17 @@
         
         if (val > best) {
             best = val;
+            
+            _bestCard = card;
+        }
+        
+        if(depth == _depth) {
+            NSLog(@"value:%d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
         }
     }
     //打印结果
     if(depth == _depth) {
-        NSLog(@"best:%d", best);
+        NSLog(@"best:%d ", best);
     }
     
     return best;

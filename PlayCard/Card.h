@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithP1:(NSString *)p1 p2:(NSString *)p2;
 
-- (void)play;
+- (void)play:(int)depth;
 
 - (NSArray *)allKind:(NSString *)p;
 
