@@ -48,7 +48,7 @@
 
 - (void)clickButton {
     Card *card = [[Card alloc] initWithP1:_p1TextField.text p2:_p2TextField.text];
-    [card play:20];
+    [card play:15];
 }
 
 
