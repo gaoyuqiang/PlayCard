@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)play;
 
+- (NSArray *)allKind:(NSString *)p;
+
 - (NSArray *)single:(NSString *)p;
 
 - (NSArray *)two:(NSString *)p;

@@ -26,6 +26,12 @@
     _p = @"Ww222AAAAKKQJJJ099877655543";
 }
 
+- (void)testAllKind {
+    NSArray *result = [_card allKind:@"09988876543"];
+    NSLog(@"%@",result);
+    XCTAssertTrue(YES);
+}
+
 - (void)testSingle{
     NSArray *result = [_card single:_p];
     NSLog(@"%@",result);

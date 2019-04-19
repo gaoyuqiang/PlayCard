@@ -21,7 +21,10 @@
 @property (nonatomic, strong) NSArray *bigArray;
 @end
 
-@implementation Card
+@implementation Card {
+    NSString * _lastCard;
+    int _depth;
+}
 
 - (instancetype)initWithP1:(NSString *)p1 p2:(NSString *)p2 {
     if(self = [super init]) {
@@ -30,19 +33,89 @@
         
         _allNumArray = @[@"W", @"w", @"2", @"A", @"K", @"Q", @"J", @"0", @"9", @"8", @"7", @"6", @"5", @"4", @"3"];
         _bigArray =  @[@"W", @"w", @"2"];
+        
+        _lastCard = @"";
     }
     return self;
 }
 
-- (void)play {
-//    _p1Turn = YES;
-    NSString *lastCard = nil;
-    while (_p1.length > 0 && _p2.length > 0) {
-        if(lastCard == nil) {
-            
+- (NSArray *)allKind:(NSString *)p lastCard:(NSString *)lastCard {
+    NSMutableArray *result = [NSMutableArray array];
+    
+    [result addObjectsFromArray:[self single:p]];
+    [result addObjectsFromArray:[self two:p]];
+    [result addObjectsFromArray:[self three:p]];
+    for (int i = 5; i <= 12; i++) {
+        [result addObjectsFromArray:[self succee:p length:i]];
+    }
+    [result addObjectsFromArray:[self threeAndOne:p]];
+    [result addObjectsFromArray:[self threeAndTwo:p]];
+    [result addObjectsFromArray:[self fourAndTwo:p]];
+    [result addObjectsFromArray:[self fourAndDouble:p]];
+    for (int i = 3; i <= 12; i++) {
+        [result addObjectsFromArray:[self succeeDouble:p length:i]];
+    }
+    [result addObjectsFromArray:[self wangzha:p]];
+    [result addObjectsFromArray:[self bomb:p]];
+
+    return [result copy];
+    
+}
+
+- (void)play:(int)depth {
+    _depth = depth;
+    [self MaxMin:depth mode:0];
+}
+
+- (int) MaxMin:(int) depth mode:(int)mode {
+    NSAssert(depth > 20, @"深度大点，没事");
+    int best = -100000000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
+    if (depth <= 0) {//当前以局面为博弈树的root
+        //    　　return Evaluate();//估值函数
+        //        NSAssert(NO, @"不该到这");
+        return 10000;
+    }
+    //    　GenerateLegalMoves(); //生成当前所有着法
+    NSArray *allResult = [self allKind:mode == 0 ? _p1 : _p2 lastCard:_lastCard];
+    
+    for (NSString *card in allResult) {//遍历每一个着法
+        /** 走一步 */
+        NSString *saveP1 = _p1;
+        NSString *saveP2 = _p2;
+        [(mode == 0 ? _p1 : _p2) stringByReplacingOccurrencesOfString:card withString:@""];
+        
+        /** 估值 */
+        int val = 0;
+        if([self isWin]) {
+            val = 1000000;
+        } else {
+            val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0];//换位思考
+        }
+        
+        /** 撤销一步*/
+        //    　　UnmakeMove(); //撤销着法
+        _p1 = saveP1;
+        _p2 = saveP2;
+        
+        if (val > best) {
+            best = val;
         }
     }
+    //打印结果
+    if(depth == _depth) {
+        NSLog(@"best:%d", best);
+    }
+    
+    return best;
 }
+
+- (BOOL)isWin {
+    if(_p1.length == 0 || _p2.length == 0) {
+        return YES;
+    }
+    return NO;
+}
+
 //单牌
 - (NSArray *)single:(NSString *)p {
 //    return [self find:p number:1];
