@@ -18,30 +18,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray *)allKind:(NSString *)p;
 
-- (NSArray *)single:(NSString *)p;
+- (NSArray *)single:(NSString *)p;//1
 
-- (NSArray *)two:(NSString *)p;
+- (NSArray *)two:(NSString *)p;//2
 
-- (NSArray *)three:(NSString *)p;
+- (NSArray *)three:(NSString *)p;//3
 
 - (NSArray *)find:(NSString *)p number:(int)num;
 
 //- (NSArray *)succee:(NSString *)p;
-- (NSArray *)succee:(NSString *)p length:(int)length;
+- (NSArray *)succee:(NSString *)p length:(NSInteger)length;//5-12
 
-- (NSArray *)threeAndOne:(NSString *)p;
+- (NSArray *)threeAndOne:(NSString *)p;//4
 
-- (NSArray *)threeAndTwo:(NSString *)p;
+- (NSArray *)threeAndTwo:(NSString *)p;//5
 
-- (NSArray *)fourAndTwo:(NSString *)p;
+- (NSArray *)fourAndTwo:(NSString *)p;//6
 
-- (NSArray *)fourAndDouble:(NSString *)p;
+- (NSArray *)fourAndDouble:(NSString *)p;//8
 
-- (NSArray *)succeeDouble:(NSString *)p length:(int)length;
+- (NSArray *)succeeDouble:(NSString *)p length:(NSInteger)length;//6-24
 
-- (NSArray *)wangzha:(NSString *)p;
+- (NSArray *)wangzha:(NSString *)p;//2
 
-- (NSArray *)bomb:(NSString *)p;
+- (NSArray *)bomb:(NSString *)p;//4
 
 @end
 

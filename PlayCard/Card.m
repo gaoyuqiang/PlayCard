@@ -41,25 +41,118 @@
 
 - (NSArray *)allKind:(NSString *)p lastCard:(NSString *)lastCard {
     NSMutableArray *result = [NSMutableArray array];
-    
-    [result addObjectsFromArray:[self single:p]];
-    [result addObjectsFromArray:[self two:p]];
-    [result addObjectsFromArray:[self three:p]];
-    for (int i = 5; i <= 12; i++) {
-        [result addObjectsFromArray:[self succee:p length:i]];
-    }
-    [result addObjectsFromArray:[self threeAndOne:p]];
-    [result addObjectsFromArray:[self threeAndTwo:p]];
-    [result addObjectsFromArray:[self fourAndTwo:p]];
-    [result addObjectsFromArray:[self fourAndDouble:p]];
-    for (int i = 3; i <= 12; i++) {
-        [result addObjectsFromArray:[self succeeDouble:p length:i]];
-    }
-    [result addObjectsFromArray:[self wangzha:p]];
-    [result addObjectsFromArray:[self bomb:p]];
+    //me王炸
+    NSArray *wangzhaArray = [self wangzha:p];
+    //me王炸+炸弹
+    NSArray *wangzhaAndBombArray = [wangzhaArray arrayByAddingObjectsFromArray:[self bomb:p]];
+    //分析打的上张牌的类型
+    if (lastCard.length == 0) {
+        //不要=====>
+        
+        [result addObjectsFromArray:[self wangzha:p]];
+        [result addObjectsFromArray:[self bomb:p]];
+        [result addObjectsFromArray:[self single:p]];
+        [result addObjectsFromArray:[self two:p]];
+        [result addObjectsFromArray:[self three:p]];
+        for (int i = 5; i <= 12; i++) {
+            [result addObjectsFromArray:[self succee:p length:i]];
+        }
+        [result addObjectsFromArray:[self threeAndOne:p]];
+        [result addObjectsFromArray:[self threeAndTwo:p]];
+        [result addObjectsFromArray:[self fourAndTwo:p]];
+        [result addObjectsFromArray:[self fourAndDouble:p]];
+        for (int i = 3; i <= 12; i++) {
+            [result addObjectsFromArray:[self succeeDouble:p length:i]];
+        }
 
+    } else if (lastCard.length == 1) {
+        //单牌=====>
+        [result addObjectsFromArray:wangzhaAndBombArray];
+        NSArray *biggerArray = [self findBiggerSameType:[self single:p] lastCard:lastCard];
+        [result addObjectsFromArray:biggerArray];
+
+    } else if (lastCard.length == 2) {
+        if([self two:lastCard].count == 1) {
+            //对牌=====>
+            [result addObjectsFromArray:wangzhaAndBombArray];
+            NSArray *biggerArray = [self findBiggerSameType:[self two:p] lastCard:lastCard];
+            [result addObjectsFromArray:biggerArray];
+            
+        } else if ([self wangzha:lastCard]){
+            //王炸=====>
+            [result addObject:@""];
+        }
+    } else if (lastCard.length == 3) {
+        //三牌=====>
+        [result addObjectsFromArray:wangzhaAndBombArray];
+        NSArray *biggerArray = [self findBiggerSameType:[self three:p] lastCard:lastCard];
+        [result addObjectsFromArray:biggerArray];
+        
+    } else if (lastCard.length == 4) {
+        if ([self bomb:lastCard]) {
+            //炸弹=====>
+            {
+                //me王炸
+                [result addObjectsFromArray:wangzhaArray];
+                //me炸弹
+                NSArray *biggerArray = [self findBiggerSameType:[self bomb:p] lastCard:lastCard];
+                [result addObjectsFromArray:biggerArray];
+                
+            }
+        } else if ([self threeAndOne:lastCard]){
+            //三带一=====>
+            [result addObjectsFromArray:wangzhaAndBombArray];
+            NSArray *biggerArray = [self findBiggerSameType:[self threeAndOne:p] lastCard:lastCard];
+            [result addObjectsFromArray:biggerArray];
+        }
+    } else if (lastCard.length >= 5) {
+        if ([[self succee:lastCard length:lastCard.length] containsObject:lastCard]) {
+            //顺子=====>
+            [result addObjectsFromArray:wangzhaAndBombArray];
+            NSArray *biggerArray = [self findBiggerSameType:[self succee:p length:lastCard.length] lastCard:lastCard];
+            [result addObjectsFromArray:biggerArray];
+            
+        } else if ([[self succeeDouble:lastCard length:lastCard.length] containsObject:lastCard]){
+            //连对=====>
+            [result addObjectsFromArray:wangzhaAndBombArray];
+            NSArray *biggerArray = [self findBiggerSameType:[self succeeDouble:p length:lastCard.length] lastCard:lastCard];
+            [result addObjectsFromArray:biggerArray];
+            
+        } else {
+            if(lastCard.length == 6) {
+                //四带2=====>
+                [result addObjectsFromArray:wangzhaAndBombArray];
+                NSArray *biggerArray = [self findBiggerSameType:[self fourAndTwo:p] lastCard:lastCard];
+                [result addObjectsFromArray:biggerArray];
+                
+            } else if (lastCard.length == 8) {
+                //四带二对=====>
+                [result addObjectsFromArray:wangzhaAndBombArray];
+                NSArray *biggerArray = [self findBiggerSameType:[self fourAndDouble:p] lastCard:lastCard];
+                [result addObjectsFromArray:biggerArray];
+            }
+        }
+    }
+    
     return [result copy];
     
+}
+
+- (NSArray *)findBiggerSameType:(NSArray *)array lastCard:(NSString *)lastCard {
+    NSMutableArray *result = [NSMutableArray array];
+    for (NSString *card in array) {
+        //第一个字符在allArray里的Index比较
+        if([self compareValueOfSameType:card value2:lastCard]) {
+            [result addObject:card];
+        }
+    }
+    return [result copy];
+}
+
+- (BOOL)compareValueOfSameType:(NSString *)value1  value2:(NSString *)value2 {
+    NSString *str1 = [value1 charStrOfIndex:0];
+    NSString *str2 = [value2 charStrOfIndex:0];
+    return [_allNumArray indexOfObject:str1] > [_allNumArray indexOfObject:str2];
 }
 
 - (void)play:(int)depth {
@@ -71,8 +164,6 @@
     NSAssert(depth > 20, @"深度大点，没事");
     int best = -100000000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
     if (depth <= 0) {//当前以局面为博弈树的root
-        //    　　return Evaluate();//估值函数
-        //        NSAssert(NO, @"不该到这");
         return 10000;
     }
     //    　GenerateLegalMoves(); //生成当前所有着法
@@ -82,7 +173,10 @@
         /** 走一步 */
         NSString *saveP1 = _p1;
         NSString *saveP2 = _p2;
+        NSString *saveLast = _lastCard;
+        
         [(mode == 0 ? _p1 : _p2) stringByReplacingOccurrencesOfString:card withString:@""];
+        _lastCard = card;
         
         /** 估值 */
         int val = 0;
@@ -93,9 +187,9 @@
         }
         
         /** 撤销一步*/
-        //    　　UnmakeMove(); //撤销着法
         _p1 = saveP1;
         _p2 = saveP2;
+        _lastCard = saveLast;
         
         if (val > best) {
             best = val;
@@ -169,7 +263,7 @@
 }
 
 //顺子
-- (NSArray *)succee:(NSString *)p length:(int)length {
+- (NSArray *)succee:(NSString *)p length:(NSInteger)length {
     NSMutableArray *result = [NSMutableArray array];
     
     NSString *lastC = nil;      //上张牌
@@ -292,7 +386,7 @@
 }
 
 //连对
-- (NSArray *)succeeDouble:(NSString *)p length:(int)length {//最少3对
+- (NSArray *)succeeDouble:(NSString *)p length:(NSInteger)length {//最少3对
     NSMutableArray *result = [NSMutableArray array];
     
     //对牌数组
