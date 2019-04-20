@@ -248,11 +248,19 @@
 
 //双牌
 - (NSArray *)two:(NSString *)p {
+    if (p.length < 2) {
+        return @[];
+    }
+    
     return [self find:p number:2];
 }
 
 //仨牌
 - (NSArray *)three:(NSString *)p {
+    if (p.length < 3) {
+        return @[];
+    }
+    
     return [self find:p number:3];
 }
 
@@ -286,6 +294,10 @@
 
 //顺子
 - (NSArray *)succee:(NSString *)p length:(NSInteger)length {
+    if (p.length < 5) {
+        return @[];
+    }
+    
     NSMutableArray *result = [NSMutableArray array];
     
     NSString *lastC = nil;      //上张牌
@@ -320,6 +332,10 @@
 
 //三带一   w222AKKKJ9993
 - (NSArray *)threeAndOne:(NSString *)p {
+    if (p.length < 4) {
+        return @[];
+    }
+    
     NSMutableArray *result = [NSMutableArray array];
     
     //三张牌数组
@@ -341,6 +357,10 @@
 
 //三带2   w222AA KKKJJ 99933
 - (NSArray *)threeAndTwo:(NSString *)p {
+    if (p.length < 5) {
+        return @[];
+    }
+    
     NSMutableArray *result = [NSMutableArray array];
     
     //三张牌数组
@@ -363,19 +383,29 @@
 
 //四带二   w2222AKKKKJJ9994433 （可以是对）
 - (NSArray *)fourAndTwo:(NSString *)p {
+    if (p.length < 6) {
+        return @[];
+    }
+    
     NSMutableArray *result = [NSMutableArray array];
     
     //四张牌数组
     NSMutableArray *fourArray = [[self find:p number:4] mutableCopy];
 
     for (NSString *str in fourArray) {
-        NSString *tempP = [p stringByReplacingOccurrencesOfString:str withString:@""];
+        NSRange range = [p rangeOfString:str];
+        NSString *tempP = p;
+        if(range.location != NSNotFound) {
+            tempP = [p stringByReplacingCharactersInRange:range withString:@""];
+        }
         
-        for (int j = 0; j < tempP.length - 1; j++) {
-            for (int k = j+1; k < tempP.length ; k++) {
-                NSString *resultStr = [NSString stringWithFormat:@"%@%@%@", str, [tempP charStrOfIndex:j], [tempP charStrOfIndex:k]];
-                if(![result containsObject:resultStr]) {
-                    [result addObject:resultStr];
+        if(tempP.length > 0) {
+            for (int j = 0; j < tempP.length - 1; j++) {
+                for (int k = j+1; k < tempP.length ; k++) {
+                    NSString *resultStr = [NSString stringWithFormat:@"%@%@%@", str, [tempP charStrOfIndex:j], [tempP charStrOfIndex:k]];
+                    if(![result containsObject:resultStr]) {
+                        [result addObject:resultStr];
+                    }
                 }
             }
         }
@@ -386,20 +416,29 @@
 
 //四带两对   w2222AKKKKJJ9994433 （可以是对）
 - (NSArray *)fourAndDouble:(NSString *)p {
+    if (p.length < 8) {
+        return @[];
+    }
     NSMutableArray *result = [NSMutableArray array];
     
     //四张牌数组
     NSMutableArray *fourArray = [[self find:p number:4] mutableCopy];
 
     for (NSString *str in fourArray) {
-        NSString *tempP = [p stringByReplacingOccurrencesOfString:str withString:@""];
+        NSRange range = [p rangeOfString:str];
+        NSString *tempP = p;
+        if(range.location != NSNotFound) {
+            tempP = [p stringByReplacingCharactersInRange:range withString:@""];
+        }
         NSMutableArray *twoArray = [[self find:tempP number:2] mutableCopy];
 
-        for (int j = 0; j < twoArray.count - 1; j++) {
-            for (int k = j+1; k < twoArray.count ; k++) {
-                NSString *resultStr = [NSString stringWithFormat:@"%@%@%@", str, twoArray[j], twoArray[k]];
-                if(![result containsObject:resultStr]) {
-                    [result addObject:resultStr];
+        if (twoArray.count > 0) {
+            for (int j = 0; j < twoArray.count - 1; j++) {
+                for (int k = j+1; k < twoArray.count ; k++) {
+                    NSString *resultStr = [NSString stringWithFormat:@"%@%@%@", str, twoArray[j], twoArray[k]];
+                    if(![result containsObject:resultStr]) {
+                        [result addObject:resultStr];
+                    }
                 }
             }
         }
@@ -409,6 +448,9 @@
 
 //连对
 - (NSArray *)succeeDouble:(NSString *)p length:(NSInteger)length {//最少3对
+    if (p.length < 6) {
+        return @[];
+    }
     NSMutableArray *result = [NSMutableArray array];
     
     //对牌数组
@@ -442,6 +484,10 @@
 //}
 
 - (NSArray *)wangzha:(NSString *)p {
+    if (p.length < 2) {
+        return @[];
+    }
+    
     if([p containsString:@"Ww"]) {
         return @[@"Ww"];
     }
@@ -450,6 +496,10 @@
 
 //炸弹
 - (NSArray *)bomb:(NSString *)p {
+    if (p.length < 4) {
+        return @[];
+    }
+    
     return [self find:p number:4];
 }
 
