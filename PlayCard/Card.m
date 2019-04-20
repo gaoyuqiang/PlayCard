@@ -181,15 +181,9 @@
         NSString *saveLast = _lastCard;
         
         if(mode == 0) {
-            NSRange range = [_p1 rangeOfString:card];
-            if(range.location != NSNotFound) {
-                _p1 = [_p1 stringByReplacingCharactersInRange:range withString:@""];
-            }
+            _p1 = [_p1 deleteString:card];
         } else {
-            NSRange range = [_p2 rangeOfString:card];
-            if(range.location != NSNotFound) {
-                _p2 = [_p2 stringByReplacingCharactersInRange:range withString:@""];
-            }
+            _p2 = [_p2 deleteString:card];
         }
         
         _lastCard = card;
@@ -197,9 +191,19 @@
         /** 估值 */
         int val = 0;
         if([self isWin]) {
+            static int i = 0;
+            NSString * tempAll = [NSString stringWithFormat:@"%@ %@", lastAllCard, [card isEqualToString:@""] ? @"不要" : card];
+            
+            i++;
+            if(i % 100000 == 0) {
+//                NSLog(@"===== %@ 赢了",tempAll);
+            }
             val = 1000000;
         } else {
             NSString * tempAll = [NSString stringWithFormat:@"%@ %@", lastAllCard, [card isEqualToString:@""] ? @"不要" : card];
+            
+//            NSLog(@"===== %@",tempAll);
+
             val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0 alpha:-beta beta:-alpha lastAllCard:tempAll];//换位思考
         }
         
@@ -216,6 +220,11 @@
                     if(depth == _depth) {
                         NSLog(@"value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
                     }
+        }
+        
+        
+        if(depth == _depth) {
+            NSLog(@"===value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
         }
 
     }
@@ -249,19 +258,11 @@
 
 //双牌
 - (NSArray *)two:(NSString *)p {
-    if (p.length < 2) {
-        return @[];
-    }
-    
     return [self find:p number:2];
 }
 
 //仨牌
 - (NSArray *)three:(NSString *)p {
-    if (p.length < 3) {
-        return @[];
-    }
-    
     return [self find:p number:3];
 }
 
@@ -295,10 +296,6 @@
 
 //顺子
 - (NSArray *)succee:(NSString *)p length:(NSInteger)length {
-    if (p.length < 5) {
-        return @[];
-    }
-    
     NSMutableArray *result = [NSMutableArray array];
     
     NSString *lastC = nil;      //上张牌
@@ -333,9 +330,6 @@
 
 //三带一   w222AKKKJ9993
 - (NSArray *)threeAndOne:(NSString *)p {
-    if (p.length < 4) {
-        return @[];
-    }
     
     NSMutableArray *result = [NSMutableArray array];
     
@@ -358,9 +352,6 @@
 
 //三带2   w222AA KKKJJ 99933
 - (NSArray *)threeAndTwo:(NSString *)p {
-    if (p.length < 5) {
-        return @[];
-    }
     
     NSMutableArray *result = [NSMutableArray array];
     
@@ -384,10 +375,6 @@
 
 //四带二   w2222AKKKKJJ9994433 （可以是对）
 - (NSArray *)fourAndTwo:(NSString *)p {
-    if (p.length < 6) {
-        return @[];
-    }
-    
     NSMutableArray *result = [NSMutableArray array];
     
     //四张牌数组
@@ -417,9 +404,6 @@
 
 //四带两对   w2222AKKKKJJ9994433 （可以是对）
 - (NSArray *)fourAndDouble:(NSString *)p {
-    if (p.length < 8) {
-        return @[];
-    }
     NSMutableArray *result = [NSMutableArray array];
     
     //四张牌数组
@@ -449,9 +433,7 @@
 
 //连对
 - (NSArray *)succeeDouble:(NSString *)p length:(NSInteger)length {//最少3对
-    if (p.length < 6) {
-        return @[];
-    }
+
     NSMutableArray *result = [NSMutableArray array];
     
     //对牌数组
@@ -485,9 +467,6 @@
 //}
 
 - (NSArray *)wangzha:(NSString *)p {
-    if (p.length < 2) {
-        return @[];
-    }
     
     if([p containsString:@"Ww"]) {
         return @[@"Ww"];
@@ -497,10 +476,6 @@
 
 //炸弹
 - (NSArray *)bomb:(NSString *)p {
-    if (p.length < 4) {
-        return @[];
-    }
-    
     return [self find:p number:4];
 }
 
@@ -512,4 +487,19 @@
     return [self substringWithRange:NSMakeRange(index, 1)];
 }
 
+- (NSString *)deleteString:(NSString *)str {
+    NSString *currentSelf = [self copy];
+    
+    for (int i = 0; i < str.length; i++) {
+        NSString *currentStr = [str charStrOfIndex:i];
+        
+        NSRange range = [currentSelf rangeOfString:currentStr];
+        if(range.location != NSNotFound) {
+            currentSelf = [currentSelf stringByReplacingCharactersInRange:range withString:@""];
+        }
+    }
+    
+    NSAssert(self.length - str.length == currentSelf.length, @"长度不一致");
+    return currentSelf;
+}
 @end

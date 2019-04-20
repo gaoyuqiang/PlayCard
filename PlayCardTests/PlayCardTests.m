@@ -26,8 +26,18 @@
     _p = @"Ww222AAAAKKQJJJ099877655543";
 }
 
+- (void)testSString {
+    NSLog(@"%@",[@"887766444" deleteString:@"444"]);
+    NSLog(@"%@",[@"887766444" deleteString:@"4446"]);
+    NSLog(@"%@",[@"887766444" deleteString:@"44466"]);
+    NSLog(@"%@",[@"887766444" deleteString:@"4448"]);
+    NSLog(@"%@",[@"887766444" deleteString:@"4447"]);
+    NSLog(@"%@",[@"887766444" deleteString:@"44477"]);
+    NSLog(@"%@",[@"887766444" deleteString:@"4447"]);
+
+}
 - (void)testPlay {
-    [_card play];
+//    [_card play];
 }
 
 - (void)testAllKind {

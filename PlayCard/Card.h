@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface  NSString (subChar)
 
 - (NSString *)charStrOfIndex:(int)index;
+- (NSString *)deleteString:(NSString *)str;
 
 @end
 
