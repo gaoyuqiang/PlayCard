@@ -44,6 +44,8 @@
     [self.view addSubview:_p1TextField];
     [self.view addSubview:_p2TextField];
     [self.view addSubview:_button];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChanged:) name:UITextFieldTextDidChangeNotification object:nil];
 }
 
 - (void)clickButton {
@@ -51,6 +53,16 @@
     [card play:15];
 }
 
+- (void)textChanged:(NSNotification *)notif {
+    //自动将小写转化成大写，除了小王w
+    UITextField *textField = notif.object;
+    if(textField.text.length > 0) {
+        NSString *last = [textField.text substringFromIndex:textField.text.length - 1];
+        if(![last isEqualToString:@"w"]) {
+            textField.text = [textField.text stringByReplacingOccurrencesOfString:last withString:[last uppercaseString]];
+        }
+    }
+}
 
 
 @end

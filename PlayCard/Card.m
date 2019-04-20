@@ -174,7 +174,6 @@
     NSArray *allResult = [self allKind:mode == 0 ? _p1 : _p2 lastCard:_lastCard];
     
     for (NSString *card in allResult) {//遍历每一个着法
-        NSLog(@"depth:%d", depth);
         /** 走一步 */
         NSString *saveP1 = _p1;
         NSString *saveP2 = _p2;
