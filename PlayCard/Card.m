@@ -161,11 +161,12 @@
 
 - (void)play:(int)depth {
     _depth = depth;
-    [self MaxMin:depth mode:0];
+    int result = [self MaxMin:depth mode:0 alpha:-100000000 beta:100000000];
+    NSLog(@"result:    %d", result);
 }
 
-- (int) MaxMin:(int) depth mode:(int)mode {
-    int best = -100000000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
+- (int) MaxMin:(int) depth mode:(int)mode alpha:(int)alpha beta:(int)beta {
+//    int best = -100000000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
     if (depth <= 0) {//当前以局面为博弈树的root
         return 0;
     }
@@ -173,6 +174,7 @@
     NSArray *allResult = [self allKind:mode == 0 ? _p1 : _p2 lastCard:_lastCard];
     
     for (NSString *card in allResult) {//遍历每一个着法
+        NSLog(@"depth:%d", depth);
         /** 走一步 */
         NSString *saveP1 = _p1;
         NSString *saveP2 = _p2;
@@ -197,7 +199,7 @@
         if([self isWin]) {
             val = 1000000;
         } else {
-            val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0];//换位思考
+            val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0 alpha:-beta beta:-alpha];//换位思考
         }
         
         /** 撤销一步*/
@@ -205,22 +207,22 @@
         _p2 = saveP2;
         _lastCard = saveLast;
         
-        if (val > best) {
-            best = val;
-            
-            _bestCard = card;
+        if (val >= beta) {
+            return beta;
         }
-        
-        if(depth == _depth) {
-            NSLog(@"value:%d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
+        if (val > alpha) {
+            alpha = val;
+                    if(depth == _depth) {
+                        NSLog(@"value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
+                    }
         }
+
     }
     //打印结果
     if(depth == _depth) {
-        NSLog(@"best:%d ", best);
+        NSLog(@"best:%d ", alpha);
     }
-    
-    return best;
+    return alpha;
 }
 
 - (BOOL)isWin {

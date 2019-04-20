@@ -21,10 +21,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    NSString *p1 = @"J3";
-    NSString *p2 = @"W85";
+    NSString *p1 = @"3333";
+    NSString *p2 = @"A";
     _card = [[Card alloc] initWithP1:p1 p2:p2];
-    [_card play:10];
+    [_card play:70];
 
     return YES;
 }
