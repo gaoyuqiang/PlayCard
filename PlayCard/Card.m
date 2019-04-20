@@ -79,7 +79,7 @@
             NSArray *biggerArray = [self findBiggerSameType:[self two:p] lastCard:lastCard];
             [result addObjectsFromArray:biggerArray];
             
-        } else if ([self wangzha:lastCard]){
+        } else if ([self wangzha:lastCard].count == 1){
             //王炸=====>
         }
     } else if (lastCard.length == 3) {
@@ -89,7 +89,7 @@
         [result addObjectsFromArray:biggerArray];
         
     } else if (lastCard.length == 4) {
-        if ([self bomb:lastCard]) {
+        if ([self bomb:lastCard].count == 1) {//fix bug: [self bomb:lastCard]永远成立
             //炸弹=====>
             {
                 //me王炸
@@ -99,23 +99,29 @@
                 [result addObjectsFromArray:biggerArray];
                 
             }
-        } else if ([self threeAndOne:lastCard]){
+        } else if ([self threeAndOne:lastCard].count == 1){
             //三带一=====>
             [result addObjectsFromArray:wangzhaAndBombArray];
             NSArray *biggerArray = [self findBiggerSameType:[self threeAndOne:p] lastCard:lastCard];
             [result addObjectsFromArray:biggerArray];
         }
     } else if (lastCard.length >= 5) {
+        if (lastCard.length == 5 && [self threeAndTwo:lastCard].count == 1) {
+            //三带二======>
+            [result addObjectsFromArray:wangzhaAndBombArray];
+            NSArray *biggerArray = [self findBiggerSameType:[self threeAndTwo:p] lastCard:lastCard];
+            [result addObjectsFromArray:biggerArray];
+        }
         if ([[self succee:lastCard length:lastCard.length] containsObject:lastCard]) {
             //顺子=====>
             [result addObjectsFromArray:wangzhaAndBombArray];
             NSArray *biggerArray = [self findBiggerSameType:[self succee:p length:lastCard.length] lastCard:lastCard];
             [result addObjectsFromArray:biggerArray];
             
-        } else if ([[self succeeDouble:lastCard length:lastCard.length] containsObject:lastCard]){
+        } else if (lastCard.length %2 == 0 && [[self succeeDouble:lastCard length:lastCard.length/2] containsObject:lastCard]){//先判断偶数
             //连对=====>
             [result addObjectsFromArray:wangzhaAndBombArray];
-            NSArray *biggerArray = [self findBiggerSameType:[self succeeDouble:p length:lastCard.length] lastCard:lastCard];
+            NSArray *biggerArray = [self findBiggerSameType:[self succeeDouble:p length:lastCard.length/2] lastCard:lastCard];
             [result addObjectsFromArray:biggerArray];
             
         } else {
@@ -137,6 +143,8 @@
     if(result.count == 0) {
         [result addObject:@""];
     }
+
+//    return [[result reverseObjectEnumerator] allObjects];
 
     return [result copy];
     
@@ -188,6 +196,13 @@
         
         _lastCard = card;
         
+        
+        static int openlog = 0;
+        if (depth == _depth && [card isEqualToString:@"000"]) {
+            openlog = 1;
+            NSLog(@"%@",@"en");
+        }
+        
         /** 估值 */
         int val = 0;
         if([self isWin]) {
@@ -195,14 +210,16 @@
             NSString * tempAll = [NSString stringWithFormat:@"%@ %@", lastAllCard, [card isEqualToString:@""] ? @"不要" : card];
             
             i++;
-            if(i % 100000 == 0) {
-//                NSLog(@"===== %@ 赢了",tempAll);
+            if(openlog == 1) {
+                
+                NSLog(@"===== %@ %@",tempAll, _p1.length == 0 ? @"赢了++" : @"输了");
             }
             val = 1000000;
         } else {
             NSString * tempAll = [NSString stringWithFormat:@"%@ %@", lastAllCard, [card isEqualToString:@""] ? @"不要" : card];
-            
-//            NSLog(@"===== %@",tempAll);
+            if(openlog == 1) {
+                NSLog(@"===== %@",tempAll);
+            }
 
             val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0 alpha:-beta beta:-alpha lastAllCard:tempAll];//换位思考
         }
@@ -217,16 +234,14 @@
         }
         if (val > alpha) {
             alpha = val;
-                    if(depth == _depth) {
-                        NSLog(@"value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
-                    }
+            
+            if(depth == _depth) {
+                NSLog(@"value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
+            }
         }
-        
-        
         if(depth == _depth) {
             NSLog(@"===value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
         }
-
     }
     //打印结果
     if(depth == _depth) {
@@ -268,6 +283,10 @@
 
 - (NSArray *)find:(NSString *)p number:(int)num {
     NSMutableArray *result = [NSMutableArray array];
+    
+    if ([p isEqualToString:@"9993"]) {
+        NSLog(@"FUCK");
+    }
     
     NSString *lastC = nil;      //上张牌
     int lastFindCount = 0;      //找到跟上张相同的次数
@@ -487,6 +506,7 @@
     return [self substringWithRange:NSMakeRange(index, 1)];
 }
 
+//专门删除字符串的，包括三带一，如98444里4449但是不挨的情况
 - (NSString *)deleteString:(NSString *)str {
     NSString *currentSelf = [self copy];
     

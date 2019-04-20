@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray *)fourAndDouble:(NSString *)p;//8
 
-- (NSArray *)succeeDouble:(NSString *)p length:(NSInteger)length;//6-24
+- (NSArray *)succeeDouble:(NSString *)p length:(NSInteger)length;//3-12对！这是对呀！！！！！！！！
 
 - (NSArray *)wangzha:(NSString *)p;//2
 
