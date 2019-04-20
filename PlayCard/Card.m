@@ -159,15 +159,16 @@
     return [_allNumArray indexOfObject:str1] < [_allNumArray indexOfObject:str2];
 }
 
-- (void)play:(int)depth {
+- (void)play:(int)depth{
     _depth = depth;
-    int result = [self MaxMin:depth mode:0 alpha:-100000000 beta:100000000];
+    int result = [self MaxMin:depth mode:0 alpha:-100000000 beta:100000000 lastAllCard:@""];
     NSLog(@"result:    %d", result);
 }
 
-- (int) MaxMin:(int) depth mode:(int)mode alpha:(int)alpha beta:(int)beta {
+- (int) MaxMin:(int) depth mode:(int)mode alpha:(int)alpha beta:(int)beta lastAllCard:(NSString *)lastAllCard {
 //    int best = -100000000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
     if (depth <= 0) {//当前以局面为博弈树的root
+        NSLog(@"+++++ %@",lastAllCard);
         return 0;
     }
     //    　GenerateLegalMoves(); //生成当前所有着法
@@ -198,7 +199,8 @@
         if([self isWin]) {
             val = 1000000;
         } else {
-            val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0 alpha:-beta beta:-alpha];//换位思考
+            NSString * tempAll = [NSString stringWithFormat:@"%@ %@", lastAllCard, [card isEqualToString:@""] ? @"不要" : card];
+            val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0 alpha:-beta beta:-alpha lastAllCard:tempAll];//换位思考
         }
         
         /** 撤销一步*/

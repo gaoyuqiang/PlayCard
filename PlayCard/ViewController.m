@@ -50,7 +50,7 @@
 
 - (void)clickButton {
     Card *card = [[Card alloc] initWithP1:_p1TextField.text p2:_p2TextField.text];
-    [card play:15];
+    [card play:30];
 }
 
 - (void)textChanged:(NSNotification *)notif {
