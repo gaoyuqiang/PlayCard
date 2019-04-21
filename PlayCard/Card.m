@@ -49,22 +49,23 @@
     //分析打的上张牌的类型
     if (lastCard.length == 0) {
         //不要=====>
-        
+        [result addObjectsFromArray:[self three:p]];
+        [result addObjectsFromArray:[self fourAndTwo:p]];
+        [result addObjectsFromArray:[self fourAndDouble:p]];
         [result addObjectsFromArray:[self wangzha:p]];
         [result addObjectsFromArray:[self bomb:p]];
-        [result addObjectsFromArray:[self single:p]];
         [result addObjectsFromArray:[self two:p]];
-        [result addObjectsFromArray:[self three:p]];
+        [result addObjectsFromArray:[self single:p]];
+        [result addObjectsFromArray:[self threeAndOne:p]];
+        [result addObjectsFromArray:[self threeAndTwo:p]];
+        
         for (int i = 5; i <= 12; i++) {
             [result addObjectsFromArray:[self succee:p length:i]];
         }
-        [result addObjectsFromArray:[self threeAndOne:p]];
-        [result addObjectsFromArray:[self threeAndTwo:p]];
-        [result addObjectsFromArray:[self fourAndTwo:p]];
-        [result addObjectsFromArray:[self fourAndDouble:p]];
         for (int i = 3; i <= 12; i++) {
             [result addObjectsFromArray:[self succeeDouble:p length:i]];
         }
+
 
     } else if (lastCard.length == 1) {
         //单牌=====>
@@ -140,13 +141,17 @@
         }
     }
     
+    //上张牌是不出，这些一定得出牌，不能不出； 如果上张牌有值，那么可以不出
+//    if(![lastCard isEqualToString:@""]) {
+//        [result addObject:@""];
+//    }
     if(result.count == 0) {
         [result addObject:@""];
     }
 
-//    return [[result reverseObjectEnumerator] allObjects];
+    return [[result reverseObjectEnumerator] allObjects];
 
-    return [result copy];
+//    return [result copy];
     
 }
 
@@ -198,8 +203,8 @@
         
         
         static int openlog = 0;
-        if (depth == _depth && [card isEqualToString:@"000"]) {
-            openlog = 1;
+        if (depth == _depth /*&& [card isEqualToString:@"87654"]*/) {
+            openlog = 0;
             NSLog(@"%@",@"en");
         }
         
@@ -283,10 +288,6 @@
 
 - (NSArray *)find:(NSString *)p number:(int)num {
     NSMutableArray *result = [NSMutableArray array];
-    
-    if ([p isEqualToString:@"9993"]) {
-        NSLog(@"FUCK");
-    }
     
     NSString *lastC = nil;      //上张牌
     int lastFindCount = 0;      //找到跟上张相同的次数
