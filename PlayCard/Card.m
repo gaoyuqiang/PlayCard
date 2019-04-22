@@ -49,18 +49,44 @@
     //分析打的上张牌的类型
     if (lastCard.length == 0) {
         //不要=====>
-        [result addObjectsFromArray:[self three:p]];
+        NSArray *threeArray = [self three:p];
+        [result addObjectsFromArray:threeArray];
+        
         [result addObjectsFromArray:[self fourAndTwo:p]];
         [result addObjectsFromArray:[self fourAndDouble:p]];
         [result addObjectsFromArray:[self wangzha:p]];
-        [result addObjectsFromArray:[self bomb:p]];
-        [result addObjectsFromArray:[self two:p]];
-        [result addObjectsFromArray:[self single:p]];
+        
+        NSArray *bombArray = [self bomb:p];
+        [result addObjectsFromArray:bombArray];
+        
+        NSArray *twoArray = [self two:p];
+        [result addObjectsFromArray:twoArray];
+        
+        NSArray *singleArray = [self single:p];
+        for (NSString *singleCard in singleArray) {
+            BOOL isFind = NO;
+            for (NSString *card2 in twoArray) {//看对的有没有
+                if ([card2 rangeOfString:singleCard].location != NSNotFound) {//找到了
+                    isFind = YES;
+                    break;
+                }
+            }
+            
+            if (isFind == YES) {
+                [result insertObject:singleCard atIndex:0];  //已经是组合的了单牌，优先级低，不推荐走，所以放在0位置（其实是最后）
+            } else {
+                [result addObject:singleCard];//纯粹的单牌
+            }
+        }
+        
+        
         [result addObjectsFromArray:[self threeAndOne:p]];
         [result addObjectsFromArray:[self threeAndTwo:p]];
         
         for (int i = 5; i <= 12; i++) {
             [result addObjectsFromArray:[self succee:p length:i]];
+            
+//            faafafasdf//第22关，怎么写呢？如果连的最后一张和最后两张都是三对的话 连的最后一张就别算到连里了，倒第二张看情况定
         }
         for (int i = 3; i <= 12; i++) {
             [result addObjectsFromArray:[self succeeDouble:p length:i]];
@@ -155,31 +181,8 @@
     
 }
 
-- (NSArray *)findBiggerSameType:(NSArray *)array lastCard:(NSString *)lastCard {
-    NSMutableArray *result = [NSMutableArray array];
-    for (NSString *card in array) {
-        //第一个字符在allArray里的Index比较
-        if([self compareValueOfSameType:card value2:lastCard]) {
-            [result addObject:card];
-        }
-    }
-    return [result copy];
-}
-
-- (BOOL)compareValueOfSameType:(NSString *)value1  value2:(NSString *)value2 {
-    NSString *str1 = [value1 charStrOfIndex:0];
-    NSString *str2 = [value2 charStrOfIndex:0];
-    return [_allNumArray indexOfObject:str1] < [_allNumArray indexOfObject:str2];
-}
-
-- (void)play:(int)depth{
-    _depth = depth;
-    int result = [self MaxMin:depth mode:0 alpha:-100000000 beta:100000000 lastAllCard:@""];
-    NSLog(@"result:    %d", result);
-}
-
 - (int) MaxMin:(int) depth mode:(int)mode alpha:(int)alpha beta:(int)beta lastAllCard:(NSString *)lastAllCard {
-//    int best = -100000000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
+    //    int best = -100000000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
     if (depth <= 0) {//当前以局面为博弈树的root
         NSLog(@"+++++ %@",lastAllCard);
         return 0;
@@ -203,17 +206,27 @@
         
         
         static int openlog = 0;
-        if (depth == _depth /*&& [card isEqualToString:@"87654"]*/) {
-            openlog = 0;
+        if (depth == _depth && [card isEqualToString:@"876543x"]) {
+            openlog = 1;
             NSLog(@"%@",@"en");
+        } else if(openlog == 1 && depth != _depth){
+            openlog = 1;
+        } else {
+            openlog = 0;
         }
         
         /** 估值 */
         int val = 0;
-        if([self isWin]) {
+        
+        static int jj = 0;
+        jj++;
+        if (jj % 100000 == 0) {
+            NSLog(@"jj:%d", jj);
+        }
+
+        if([self isWin:mode]) {
             static int i = 0;
-            NSString * tempAll = [NSString stringWithFormat:@"%@ %@", lastAllCard, [card isEqualToString:@""] ? @"不要" : card];
-            
+            NSString * tempAll = [NSString stringWithFormat:@"%@ %@%@%@", lastAllCard, mode == 0 ? @"" : @"-", [card isEqualToString:@""] ? @"不要" : card, mode == 1 ? @" " : @" "];
             i++;
             if(openlog == 1) {
                 
@@ -221,11 +234,11 @@
             }
             val = 1000000;
         } else {
-            NSString * tempAll = [NSString stringWithFormat:@"%@ %@", lastAllCard, [card isEqualToString:@""] ? @"不要" : card];
+            NSString * tempAll = [NSString stringWithFormat:@"%@ %@%@%@", lastAllCard, mode == 0 ? @"" : @"-", [card isEqualToString:@""] ? @"不要" : card, mode == 1 ? @" " : @" "];
             if(openlog == 1) {
-                NSLog(@"===== %@",tempAll);
+//                NSLog(@"===== %@",tempAll);
             }
-
+            
             val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0 alpha:-beta beta:-alpha lastAllCard:tempAll];//换位思考
         }
         
@@ -255,10 +268,47 @@
     return alpha;
 }
 
-- (BOOL)isWin {
+- (NSArray *)findBiggerSameType:(NSArray *)array lastCard:(NSString *)lastCard {
+    NSMutableArray *result = [NSMutableArray array];
+    for (NSString *card in array) {
+        //第一个字符在allArray里的Index比较
+        if([self compareValueOfSameType:card value2:lastCard]) {
+            [result addObject:card];
+        }
+    }
+    return [result copy];
+}
+
+- (BOOL)compareValueOfSameType:(NSString *)value1  value2:(NSString *)value2 {
+    NSString *str1 = [value1 charStrOfIndex:0];
+    NSString *str2 = [value2 charStrOfIndex:0];
+    return [_allNumArray indexOfObject:str1] < [_allNumArray indexOfObject:str2];
+}
+
+- (void)play:(int)depth{
+    _depth = depth;
+    int result = [self MaxMin:depth mode:0 alpha:-100000000 beta:100000000 lastAllCard:@""];
+    NSLog(@"result:    %d", result);
+}
+
+
+- (BOOL)isWin:(int)mode {
     if(_p1.length == 0 || _p2.length == 0) {
         return YES;
     }
+    
+    
+    NSString *p1 = mode == 0 ? _p1 : _p2;
+    NSString *p2 = mode == 0 ? _p2 : _p1;
+    
+    NSString *p1Last = [p1 charStrOfIndex:(int)(p1.length - 1)];
+    NSString *p2Last = [p2 charStrOfIndex:(int)(0)];
+    
+    if ([_allNumArray indexOfObject:p1Last] <= [_allNumArray indexOfObject:p2Last] && _p2.length >= 2 && [self bomb:p2].count == 0) {
+        //最小的牌比最大的牌还大, p2至少2张牌，p2没有炸弹，必赢
+        return YES;
+    }
+    
     return NO;
 }
 
