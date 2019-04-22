@@ -206,7 +206,7 @@
         
         
         static int openlog = 0;
-        if (depth == _depth && [card isEqualToString:@"876543x"]) {
+        if (depth == _depth && [card isEqualToString:@"KQJ098"]) {
             openlog = 1;
             NSLog(@"%@",@"en");
         } else if(openlog == 1 && depth != _depth){
@@ -233,6 +233,12 @@
                 NSLog(@"===== %@ %@",tempAll, _p1.length == 0 ? @"赢了++" : @"输了");
             }
             val = 1000000;
+            /* 这行是alpha-beta算法之外的，是斗地主的特殊情况！ */
+            if(depth == _depth) {
+                NSLog(@"win-value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
+            }
+            return val;//直接返回 你就是最大的了 节点最大的了，不存在+无穷
+            
         } else {
             NSString * tempAll = [NSString stringWithFormat:@"%@ %@%@%@", lastAllCard, mode == 0 ? @"" : @"-", [card isEqualToString:@""] ? @"不要" : card, mode == 1 ? @" " : @" "];
             if(openlog == 1) {
@@ -304,10 +310,10 @@
     NSString *p1Last = [p1 charStrOfIndex:(int)(p1.length - 1)];
     NSString *p2Last = [p2 charStrOfIndex:(int)(0)];
     
-    if ([_allNumArray indexOfObject:p1Last] <= [_allNumArray indexOfObject:p2Last] && _p2.length >= 2 && [self bomb:p2].count == 0) {
-        //最小的牌比最大的牌还大, p2至少2张牌，p2没有炸弹，必赢
-        return YES;
-    }
+//    if ([_allNumArray indexOfObject:p1Last] <= [_allNumArray indexOfObject:p2Last] && p2.length >= 2 && [self bomb:p2].count == 0) {
+//        //最小的牌比最大的牌还大, p2至少2张牌，p2没有炸弹，必赢
+//        return YES;
+//    }
     
     return NO;
 }
