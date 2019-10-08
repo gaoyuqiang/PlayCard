@@ -49,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)charStrOfIndex:(int)index;
 - (NSString *)deleteString:(NSString *)str;
+//比较单牌是否比对方大
+- (BOOL)bigger:(NSString *)single;
 
 @end
 

@@ -86,7 +86,7 @@
         for (int i = 5; i <= 12; i++) {
             [result addObjectsFromArray:[self succee:p length:i]];
             
-//            faafafasdf//第22关，怎么写呢？如果连的最后一张和最后两张都是三对的话 连的最后一张就别算到连里了，倒第二张看情况定
+            //            TODO://第22关，怎么写呢？如果连的最后一张和最后两张都是三对的话 连的最后一张就别算到连里了，倒第二张看情况定
         }
         for (int i = 3; i <= 12; i++) {
             [result addObjectsFromArray:[self succeeDouble:p length:i]];
@@ -187,6 +187,13 @@
         NSLog(@"+++++ %@",lastAllCard);
         return 0;
     }
+    
+    //判断是否已经赢了
+    if ([self isWin:mode] || [self isWin2:mode lastAllCard:lastAllCard]) {
+//        NSLog(@"===== %@ %@, p1:%@, p2:%@",lastAllCard, mode == 0 ? @"赢了++ GO" : @"输了 GO", _p1, _p2);
+        return 1000000;
+    }
+    
     //    　GenerateLegalMoves(); //生成当前所有着法
     NSArray *allResult = [self allKind:mode == 0 ? _p1 : _p2 lastCard:_lastCard];
     
@@ -224,13 +231,13 @@
             NSLog(@"jj:%d", jj);
         }
 
-        if([self isWin:mode]) {
+        if(_p1.length == 0 || _p2.length == 0) {
             static int i = 0;
             NSString * tempAll = [NSString stringWithFormat:@"%@ %@%@%@", lastAllCard, mode == 0 ? @"" : @"-", [card isEqualToString:@""] ? @"不要" : card, mode == 1 ? @" " : @" "];
             i++;
             if(openlog == 1) {
                 
-                NSLog(@"===== %@ %@",tempAll, _p1.length == 0 ? @"赢了++" : @"输了");
+                NSLog(@"===== %@ %@",tempAll, mode == 0 ? @"赢了++" : @"输了");
             }
             val = 1000000;
             /* 这行是alpha-beta算法之外的，是斗地主的特殊情况！ */
@@ -247,6 +254,9 @@
             
             val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0 alpha:-beta beta:-alpha lastAllCard:tempAll];//换位思考
         }
+        
+        
+//        停在33关，在win里添加一个方法 当p1全是单牌，p2的小单牌更多时，p1直接赢！ 之所以穷举不完，是因为单牌大大增加了搜索的深度！所以以后也多加一些单牌必输的情况！！！
         
         /** 撤销一步*/
         _p1 = saveP1;
@@ -297,26 +307,162 @@
     NSLog(@"result:    %d", result);
 }
 
-
 - (BOOL)isWin:(int)mode {
-    if(_p1.length == 0 || _p2.length == 0) {
-        return YES;
+    if (_p1.length == 0 || _p2.length == 0) {
+        return NO;
     }
-    
     
     NSString *p1 = mode == 0 ? _p1 : _p2;
     NSString *p2 = mode == 0 ? _p2 : _p1;
     
-    NSString *p1Last = [p1 charStrOfIndex:(int)(p1.length - 1)];
-    NSString *p2Last = [p2 charStrOfIndex:(int)(0)];
+    //对方牌对等的区间必须是单数，自己随意
+    //对方前面的区间 如果有三个或四个 或两个连续三个的 删掉末尾的一张或2张，再做比较
+    //不能是连
     
-//    if ([_allNumArray indexOfObject:p1Last] <= [_allNumArray indexOfObject:p2Last] && p2.length >= 2 && [self bomb:p2].count == 0) {
-//        //最小的牌比最大的牌还大, p2至少2张牌，p2没有炸弹，必赢
-//        return YES;
-//    }
+    if (p1.length < p2.length) {
+        NSString *p2BeforeZone = @""; //前区间
+        NSString *p2AfterZone = @"";  //后区间
+        
+        /** =====找出前区间和后区间 ======*/
+        BOOL isFound = NO;
+        NSString *firstP1 = [p1 charStrOfIndex:0];
+        for (int i = 0; i < p2.length; i++) {
+            NSString *ch = [p2 charStrOfIndex:i];
+            if ([firstP1 bigger:ch]) {
+                p2BeforeZone = [p2 substringToIndex:i];//这有问题，得测试。。。。。。
+                p2AfterZone = [p2 substringFromIndex:i];
+
+                isFound = YES;
+                break;
+            }
+        }
+        
+        /** =====确认后区间全是单牌 ======*/
+        NSString *lastCh = @"";
+        for (int i = 0; i < p2AfterZone.length; i++) {
+            NSString *ch = [p2AfterZone charStrOfIndex:i];
+            if ([ch isEqualToString:lastCh]) {
+                return NO;//直接返回 必须是单牌
+            }
+            lastCh = ch;
+        }
+        
+        /** ====找前区的三个和四个，他们可以带1或2张牌=== */
+        NSArray *threeArray = [self three:p2];
+        NSArray *fourArray = [self bomb:p2];
+        int count = 0;
+        for (NSString *threeStr in threeArray) {
+            BOOL find = NO;
+            for (NSString *fourStr in fourArray) {
+                if ([fourStr rangeOfString:threeStr].length > 0) {
+                    find = YES;
+                    break;
+                }
+            }
+            count = count + (find ? 2 : 1);
+        }
+        for (int i = 0; i < count; i++) {
+            if (p2AfterZone.length > 0) {
+                p2AfterZone = [p2AfterZone substringToIndex:p2AfterZone.length - 1];
+            } else {
+                break;
+            }
+        }
+        if (p2AfterZone.length == 0) {
+            return NO;
+        }
+
+        /** 不能包含部分的连 */
+        NSMutableArray *succeeArray = [NSMutableArray array];
+        for (int i = 5; i <= 12; i++) {
+            [succeeArray addObjectsFromArray:[self succee:p2 length:i]];
+        }
+        for (NSString *succeeStr in succeeArray) {
+            NSString *lastCh = [succeeStr charStrOfIndex:succeeStr.length - 1];
+            if ([p2AfterZone rangeOfString:lastCh].length > 0) {
+                //不能让连与后区交叉
+                return NO;
+            }
+        }
+
+        /** =====二个指针遍历后区间和自己，进行对比 ======*/
+        if (p2AfterZone.length > p1.length) {
+            //p2的小区间 牌一定多于p1自己
+
+            int i1 = 0;
+            int i2 = 0;
+            while (i1 < p1.length && i2 < p2AfterZone.length) {
+                NSString *ch1 = [p1 charStrOfIndex:i1];
+                NSString *ch2 = [p2AfterZone charStrOfIndex:i2];
+                
+                if ([ch1 bigger:ch2]) {
+                    if (i1 == p1.length - 1 && i2 != p2AfterZone.length - 1) {
+                        //赢了
+                        return YES;
+                    } else {
+                        i1++;
+                        i2++;
+                        continue;
+                    }
+                    
+                } else {
+                    i2++;
+                }
+            }
+        }
+    }
+    
     
     return NO;
 }
+
+- (BOOL)isWin2:(int)mode lastAllCard:(NSString *)lastAllCard {
+    if (_p1.length == 0 || _p2.length == 0) {
+        return NO;
+    }
+    
+    NSString *p1 = mode == 0 ? _p1 : _p2;
+    NSString *p2 = mode == 0 ? _p2 : _p1;
+    
+    /**===========判断p1的所有牌都比p2的大================ */
+    NSString *p1Last = [p1 charStrOfIndex:(int)(p1.length - 1)];
+    NSString *p2First = [p2 charStrOfIndex:(int)(0)];
+    lastAllCard = [lastAllCard stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    
+    if (lastAllCard.length == 0 || (lastAllCard.length >= 2 && ([[lastAllCard substringFromIndex:lastAllCard.length - 2] isEqualToString:@"不要"]))) {//上一次对方没走或者走的"不要"，现在p1随便出的时候
+        if ([_allNumArray indexOfObject:p1Last] <= [_allNumArray indexOfObject:p2First] && [self bomb:p2].count == 0) {
+            //必赢
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+
+- (BOOL)isWin3:(int)mode lastAllCard:(NSString *)lastAllCard {想找一种 必赢 必输 未知的情况，比如单牌都有管住对方的牌，双牌都有管住对方的牌 三牌也有
+    if (_p1.length == 0 || _p2.length == 0) {
+        return NO;
+    }
+    
+    NSString *p1 = mode == 0 ? _p1 : _p2;
+    NSString *p2 = mode == 0 ? _p2 : _p1;
+    
+    /**===========判断p1的所有牌都比p2的大================ */
+    NSString *p1Last = [p1 charStrOfIndex:(int)(p1.length - 1)];
+    NSString *p2First = [p2 charStrOfIndex:(int)(0)];
+    lastAllCard = [lastAllCard stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    
+    if (lastAllCard.length == 0 || (lastAllCard.length >= 2 && ([[lastAllCard substringFromIndex:lastAllCard.length - 2] isEqualToString:@"不要"]))) {//上一次对方没走或者走的"不要"，现在p1随便出的时候
+        if ([_allNumArray indexOfObject:p1Last] <= [_allNumArray indexOfObject:p2First] && [self bomb:p2].count == 0) {
+            //必赢
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
 
 //单牌
 - (NSArray *)single:(NSString *)p {
@@ -579,4 +725,16 @@
     NSAssert(self.length - str.length == currentSelf.length, @"长度不一致");
     return currentSelf;
 }
+
+- (BOOL)bigger:(NSString *)single {
+    NSAssert(self.length == 1, @"必须是单牌");
+    NSAssert(single.length == 1, @"必须是单牌");
+    NSArray *allNumArray = @[@"W", @"w", @"2", @"A", @"K", @"Q", @"J", @"0", @"9", @"8", @"7", @"6", @"5", @"4", @"3"];
+
+    if ([allNumArray indexOfObject:self] < [allNumArray indexOfObject:single]) {
+        return YES;
+    }
+    return NO;
+}
+
 @end
