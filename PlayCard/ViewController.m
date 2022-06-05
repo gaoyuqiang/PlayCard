@@ -13,6 +13,7 @@
 
 @property(nonatomic, strong) UITextField *p1TextField;
 @property(nonatomic, strong) UITextField *p2TextField;
+@property(nonatomic, strong) UISwitch *switchLogControl;
 @property(nonatomic, strong) UIButton *button;
 
 @property(nonatomic, strong) UITextView *textView;
@@ -39,18 +40,24 @@
     [_button addTarget:self action:@selector(clickButton) forControlEvents:UIControlEventTouchUpInside];
     _button.backgroundColor = [UIColor cyanColor];
     
+    _switchLogControl = [[UISwitch alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 100, _button.frame.origin.y + 10, 60, 40)];
+    _switchLogControl.on = YES;
+
     _textView = [[UITextView alloc] initWithFrame:CGRectMake(40, 420, 300, 200)];
 
     [self.view addSubview:_p1TextField];
     [self.view addSubview:_p2TextField];
     [self.view addSubview:_button];
+    [self.view addSubview:_switchLogControl];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChanged:) name:UITextFieldTextDidChangeNotification object:nil];
 }
 
 - (void)clickButton {
     Card *card = [[Card alloc] initWithP1:_p1TextField.text p2:_p2TextField.text];
-    [card play:60];
+    card.openlog = _switchLogControl.on;
+    NSString *result = [card play:40];
+    self.p1TextField.text = result;
 }
 
 - (void)textChanged:(NSNotification *)notif {

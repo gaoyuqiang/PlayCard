@@ -12,9 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Card : NSObject
 
+@property (nonatomic, assign) BOOL openlog;
+
 - (instancetype)initWithP1:(NSString *)p1 p2:(NSString *)p2;
 
-- (void)play:(int)depth;
+/** 返回第一步选择 */
+- (NSString *)play:(int)depth;
 
 - (NSArray *)allKind:(NSString *)p;
 

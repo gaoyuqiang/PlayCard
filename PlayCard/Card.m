@@ -11,6 +11,8 @@
 //     W w 2 A K Q J 0 9 8 7 6 5 4 3
 //
 //
+#define num_100000 (1000000)   //成功值
+
 @interface Card ()
 
 @property (nonatomic, strong) NSString *p1;
@@ -19,6 +21,9 @@
 
 @property (nonatomic, strong) NSArray *allNumArray;
 @property (nonatomic, strong) NSArray *bigArray;
+@property (nonatomic, strong) NSMutableDictionary *allKindCache; //哈希缓存情况
+@property (nonatomic, strong) NSString *result; //最终结果（第一次选择)
+
 @end
 
 @implementation Card {
@@ -34,10 +39,23 @@
         
         _allNumArray = @[@"W", @"w", @"2", @"A", @"K", @"Q", @"J", @"0", @"9", @"8", @"7", @"6", @"5", @"4", @"3"];
         _bigArray =  @[@"W", @"w", @"2"];
+        _allKindCache = [NSMutableDictionary dictionary];
         
         _lastCard = @"";
+        
+        //检查p1 p2合法性
+        [self checkPValid:_p1];
+        [self checkPValid:_p2];
     }
     return self;
+}
+
+- (void)checkPValid:(NSString *)p {
+    for (int i = 0; i < p.length; i++) {
+        if (![_allNumArray containsObject:[p charStrOfIndex:i]]) {
+            NSAssert(NO, @"p1或p2没匹配上,看大小写");
+        }
+    }
 }
 
 - (NSArray *)allKind:(NSString *)p lastCard:(NSString *)lastCard {
@@ -60,7 +78,6 @@
         [result addObjectsFromArray:bombArray];
         
         NSArray *twoArray = [self two:p];
-        [result addObjectsFromArray:twoArray];
         
         NSArray *singleArray = [self single:p];
         for (NSString *singleCard in singleArray) {
@@ -73,13 +90,14 @@
             }
             
             if (isFind == YES) {
-                [result insertObject:singleCard atIndex:0];  //已经是组合的了单牌，优先级低，不推荐走，所以放在0位置（其实是最后）
+                [result insertObject:singleCard atIndex:0];  //已经是组合的了单牌，优先级低，不推荐走，所以放在0位置（其实是最后） TODO:这里有问题 顺序是先大到小是错的！！！！！！！！！=》》》》》》》》》》》》错误的
             } else {
                 [result addObject:singleCard];//纯粹的单牌
             }
         }
         
         
+        [result addObjectsFromArray:twoArray];
         [result addObjectsFromArray:[self threeAndOne:p]];
         [result addObjectsFromArray:[self threeAndTwo:p]];
         
@@ -139,13 +157,13 @@
             NSArray *biggerArray = [self findBiggerSameType:[self threeAndTwo:p] lastCard:lastCard];
             [result addObjectsFromArray:biggerArray];
         }
-        if ([[self succee:lastCard length:lastCard.length] containsObject:lastCard]) {
+        if ([[self succee:lastCard length:lastCard.length] containsObject:lastCard]) {//TODO:可以改进
             //顺子=====>
             [result addObjectsFromArray:wangzhaAndBombArray];
             NSArray *biggerArray = [self findBiggerSameType:[self succee:p length:lastCard.length] lastCard:lastCard];
             [result addObjectsFromArray:biggerArray];
             
-        } else if (lastCard.length %2 == 0 && [[self succeeDouble:lastCard length:lastCard.length/2] containsObject:lastCard]){//先判断偶数
+        } else if (lastCard.length %2 == 0 && [[self succeeDouble:lastCard length:lastCard.length/2] containsObject:lastCard]){//先判断偶数 TODO:可以改进
             //连对=====>
             [result addObjectsFromArray:wangzhaAndBombArray];
             NSArray *biggerArray = [self findBiggerSameType:[self succeeDouble:p length:lastCard.length/2] lastCard:lastCard];
@@ -173,6 +191,10 @@
 //    }
     if(result.count == 0) {
         [result addObject:@""];
+        
+    } else if (lastCard.length != 0) {
+        //----->当对方走了之后 即使有牌可走，有时候也要走“不要”。否则有些时候找不到赢的方法 例如第14关
+        [result insertObject:@"" atIndex:0];
     }
 
     return [[result reverseObjectEnumerator] allObjects];
@@ -181,23 +203,36 @@
     
 }
 
-- (int) MaxMin:(int) depth mode:(int)mode alpha:(int)alpha beta:(int)beta lastAllCard:(NSString *)lastAllCard {
-    //    int best = -100000000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
+- (int) MaxMin:(int) depth mode:(int)mode lastAllCard:(NSString *)lastAllCard {
+    int best = -num_100000;//player_mode是参照物，如果当前落子是人，则返回一个很小的值，反之返回很大
     if (depth <= 0) {//当前以局面为博弈树的root
         NSLog(@"+++++ %@",lastAllCard);
+        NSAssert(NO, @"noooooo");
         return 0;
     }
     
     //判断是否已经赢了
     if ([self isWin:mode] || [self isWin2:mode lastAllCard:lastAllCard]) {
-//        NSLog(@"===== %@ %@, p1:%@, p2:%@",lastAllCard, mode == 0 ? @"赢了++ GO" : @"输了 GO", _p1, _p2);
-        return 1000000;
+        if (_openlog) {
+            NSLog(@"===== 提前判定 %@ %@, p1:%@, p2:%@",lastAllCard, mode == 0 ? @"赢了++ GO" : @"输了 GO", _p1, _p2);
+        }
+        return num_100000;
     }
     
     //    　GenerateLegalMoves(); //生成当前所有着法
-    NSArray *allResult = [self allKind:mode == 0 ? _p1 : _p2 lastCard:_lastCard];
-    
+    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", mode == 0 ? _p1 : _p2, _lastCard];
+    NSArray *allResult = [_allKindCache objectForKey:cacheKey];
+    if (!allResult) {
+        allResult = [self allKind:mode == 0 ? _p1 : _p2 lastCard:_lastCard];
+        [_allKindCache setObject:allResult forKey:cacheKey];
+    } else {
+//        NSLog(@"====cache++yessss+%@", cacheKey);
+    }
+
+
+    static int i = 0;
     for (NSString *card in allResult) {//遍历每一个着法
+        i++;
         /** 走一步 */
         NSString *saveP1 = _p1;
         NSString *saveP2 = _p2;
@@ -212,16 +247,15 @@
         _lastCard = card;
         
         
-        static int openlog = 0;
-        if (depth == _depth && [card isEqualToString:@"KQJ098"]) {
-            openlog = 1;
-            NSLog(@"%@",@"en");
-        } else if(openlog == 1 && depth != _depth){
-            openlog = 1;
-        } else {
-            openlog = 0;
-        }
-        
+//        if (depth == _depth && [card isEqualToString:@"KQJ098"]) {
+//            openlog = 1;
+//            NSLog(@"%@",@"en");
+//        } else if(openlog == 1 && depth != _depth){
+//            openlog = 1;
+//        } else {
+//            openlog = 0;
+//        }
+
         /** 估值 */
         int val = 0;
         
@@ -235,24 +269,25 @@
             static int i = 0;
             NSString * tempAll = [NSString stringWithFormat:@"%@ %@%@%@", lastAllCard, mode == 0 ? @"" : @"-", [card isEqualToString:@""] ? @"不要" : card, mode == 1 ? @" " : @" "];
             i++;
-            if(openlog == 1) {
+            if(_openlog == 1) {
                 
-                NSLog(@"===== %@ %@",tempAll, mode == 0 ? @"赢了++" : @"输了");
+                NSLog(@"===== 最后一张 %@  %@",tempAll, mode == 0 ? @"赢了++" : @"输了");
             }
-            val = 1000000;
+            val = num_100000;
             /* 这行是alpha-beta算法之外的，是斗地主的特殊情况！ */
             if(depth == _depth) {
-                NSLog(@"win-value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
+                NSLog(@"win-value:  %d, card:  %@, %@", val, card, mode == 0 ? @"✅" : @"❌");
             }
             return val;//直接返回 你就是最大的了 节点最大的了，不存在+无穷
             
         } else {
-            NSString * tempAll = [NSString stringWithFormat:@"%@ %@%@%@", lastAllCard, mode == 0 ? @"" : @"-", [card isEqualToString:@""] ? @"不要" : card, mode == 1 ? @" " : @" "];
-            if(openlog == 1) {
-//                NSLog(@"===== %@",tempAll);
-            }
+            NSString * tempAll = [NSString stringWithFormat:@"%@ %@%@%@", lastAllCard, mode == 0 ? @"" : @"-", [card isEqualToString:@""] ? @"不要" : card, mode == 1 ? @" " : @" "];//TODO:这为啥都是空格 错 了？
+
             
-            val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0 alpha:-beta beta:-alpha lastAllCard:tempAll];//换位思考
+            val = -[self MaxMin:depth - 1  mode:mode == 0 ? 1 : 0 lastAllCard:tempAll];//换位思考
+            if(_openlog == 1) {
+                NSLog(@"every-tempAll:%@, %@", tempAll, (val == num_100000 && mode == 0) || (val == -num_100000 && mode == 1) ? @"✅" : @"❌");
+            }
         }
         
         
@@ -263,25 +298,21 @@
         _p2 = saveP2;
         _lastCard = saveLast;
         
-        if (val >= beta) {
-            return beta;
-        }
-        if (val > alpha) {
-            alpha = val;
-            
-            if(depth == _depth) {
-                NSLog(@"value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
-            }
-        }
         if(depth == _depth) {
-            NSLog(@"===value:  %d, card:  %@, %@", val, card, val == 1000000 ? @"✅" : @"❌");
+            NSLog(@"===value:  %d, card:  %@, %@", val, card, (val == num_100000 && mode == 0) || (val == -num_100000 && mode == 1) ? @"✅" : @"❌");
+            _result = card;
+        }
+        if (val == num_100000) {//----> 成功了 就直接返回，时间从由几分钟一下缩短到了几秒钟了。即使第一次走牌走错了，也是几秒钟！测试了一下前十几关 甚至有些是0.05秒
+            best = val;
+            break;
         }
     }
+
     //打印结果
     if(depth == _depth) {
-        NSLog(@"best:%d ", alpha);
+        NSLog(@"best:%d i:%d", best, i);
     }
-    return alpha;
+    return best;
 }
 
 - (NSArray *)findBiggerSameType:(NSArray *)array lastCard:(NSString *)lastCard {
@@ -301,10 +332,10 @@
     return [_allNumArray indexOfObject:str1] < [_allNumArray indexOfObject:str2];
 }
 
-- (void)play:(int)depth{
+- (NSString *)play:(int)depth{
     _depth = depth;
-    int result = [self MaxMin:depth mode:0 alpha:-100000000 beta:100000000 lastAllCard:@""];
-    NSLog(@"result:    %d", result);
+    int result = [self MaxMin:depth mode:0 lastAllCard:@""];
+    return self.result;
 }
 
 - (BOOL)isWin:(int)mode {
@@ -440,7 +471,7 @@
 }
 
 
-- (BOOL)isWin3:(int)mode lastAllCard:(NSString *)lastAllCard {想找一种 必赢 必输 未知的情况，比如单牌都有管住对方的牌，双牌都有管住对方的牌 三牌也有
+- (BOOL)isWin3:(int)mode lastAllCard:(NSString *)lastAllCard {//TODO:想找一种 必赢 必输 未知的情况，比如单牌都有管住对方的牌，双牌都有管住对方的牌 三牌也有
     if (_p1.length == 0 || _p2.length == 0) {
         return NO;
     }
