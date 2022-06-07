@@ -14,7 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL openlog;
 
-- (instancetype)initWithP1:(NSString *)p1 p2:(NSString *)p2;
+- (instancetype)initWithP1:(NSString *)p1 p2:(NSString *)p2 lastCard:(NSString *)lastCard;
+
+@property (nonatomic, strong) NSMutableArray *allLogArray;
 
 /** 返回第一步选择 */
 - (NSString *)play:(int)depth;

@@ -112,24 +112,39 @@
     p2= @"WwAA97633";
     p1 = @"Q0096433";//困难5
     p2 = @"2076633";
-    p1 = @"22AQJ99664";//困难9
+    p1 = @"22AQJ99664";//困难9 //这个案例比较特殊  很慢 可以用来分析改进算法
     p2 = @"WAKKQJJ088744";
     
+    p1 = @"2Q9766554";//困难10  稍微慢点 可以用来分析改进算法
+    p2 = @"KKQJ09766433";
     
+    p1 = @"2J00655533";//困难11
+    p2 = @"wAAK7763";
     
+    p1 = @"KKKJ88533";//困难12
+    p2 = @"AAQJJ09553";
     
+    p1 = @"K9987533";//困难13
+    p2 = @"QJ866";
+    p1 = @"WAKQJ8644";//困难14
+    p2 = @"22AKQ0097553";
     
+    p1 = @"K07755433";//专家1
+    p2 = @"Q88664";
+    p1 = @"AKJ988653";
+    p2 = @"2KJ08854";
+    p1 = @"J00777763";
+    p2 = @"WAAJ0844";
+    p1 = @"AQQJ9988653";
+    p2 = @"2KQJJ095433";
+    p1 = @"AJ0776554";
+    p2 = @"JJ9665";
+    p1 = @"K07755433";//专家1
+    p2 = @"Q88664";
     
-//    NSString *p1 = @"KQJ098865";
-//    NSString *p2 = @"w22AKQJ008754";
-    
-//            NSString *p1 = @"Ww22AKQJ0754";
-//            NSString *p2 = @"87";
-    
-//        NSString *p1 = @"9887";
-//        NSString *p2 = @"Ww222KK9876543";
-    _card = [[Card alloc] initWithP1:p1 p2:p2];
-    _card.openlog = NO;
+
+    _card = [[Card alloc] initWithP1:p1 p2:p2 lastCard:@""];
+    _card.openlog = YES;
     [_card play:40];
 
     return YES;
